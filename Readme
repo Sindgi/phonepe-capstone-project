@@ -119,3 +119,5 @@ Step 6:
 Data retrieval:
 
 Finally if needed Using the "mysql-connector-python" library to connect to the MySQL database and fetch the data into a Pandas dataframe.
+Demo video link:
+https://youtu.be/P3tG0Og3jec
