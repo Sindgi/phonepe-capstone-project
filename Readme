@@ -1,0 +1,121 @@
+Data Visualization and Exploration : A User-Friendly Tool Using Streamlit and Plotly
+
+What is PhonePe Pulse?
+The PhonePe Pulse website showcases more than 2000+ Crore transactions by consumers on an interactive map of India. With over 45% market share, PhonePe's data is representative of the country's digital payment habits. The insights on the website and in the report have been drawn from two key sources - the entirety of PhonePe's transaction data combined with merchant and customer interviews. 
+The report is available as a free download on the PhonePe Pulse website and GitHub.
+
+
+Libraries/Modules needed for the project!
+
+Plotly - (To plot and visualize the data)
+Pandas - (To Create a DataFrame with the scraped data)
+mysql.connector - (To store and retrieve the data)
+Streamlit - (To Create Graphical user Interface)
+json - (To load the json files)
+git.repo.base - (To clone the GitHub repository)
+
+Step 1:
+Importing the Libraries:
+
+Importing the libraries. As I have already mentioned above the list of libraries/modules needed for the project. First we have to import all those libraries. If the libraries are not installed already use the below piece of code to install.
+
+!pip install ["Name of the library"]
+If the libraries are already installed then we have to import those into our script by mentioning the below codes.
+
+    import pandas as pd
+    import mysql.connector as sql
+    import streamlit as st
+    import plotly.express as px
+    import os
+    import json
+    from streamlit_option_menu import option_menu
+    from PIL import Image
+    from git.repo.base import Repo
+    
+Step 2:
+Data extraction:
+
+Clone the Github using scripting to fetch the data from the Phonepe pulse Github repository and store it in a suitable format such as JSON. Use the below syntax to clone the phonepe github repository into your local drive.
+
+    from git.repo.base import Repo
+    Repo.clone_from("GitHub Clone URL","Path to get the cloned files")
+
+Step 3:
+Data transformation and extraction:
+aggregated_trans_df_list = []
+aggregated_user_df_list = []
+map_trans_df_list = []
+map_user_df_list = []
+top_trans_df_list = []
+top_user_df_list = []
+for state in states:
+
+    # Loop through each year
+    for year in range(2018, 2023):
+
+        # Loop through each quarter
+        for quarter in range(1, 5):
+
+            # Define the file path for the aggregated data
+            agg_file_path = os.path.join(main_path, "aggregated", "transaction", "country", "india", "state", state,
+                                         str(year), f"{quarter}.json")
+
+            # Check if the aggregated data file exists
+            if os.path.exists(agg_file_path):
+
+                # Load the aggregated data
+                with open(agg_file_path, "r") as f:
+                    data = json.load(f)
+
+                # Extract the relevant data from the JSON object
+                from_time = data["data"]["from"]
+                to_time = data["data"]["to"]
+                transactions = data["data"]["transactionData"]
+
+                # Loop through each transaction type and payment instrument
+                for transaction in transactions:
+                    transaction_name = transaction["name"]
+                    payment_instruments = transaction["paymentInstruments"]
+
+                    for payment_instrument in payment_instruments:
+                        payment_type = payment_instrument["type"]
+                        payment_count = payment_instrument["count"]
+                        payment_amount = payment_instrument["amount"]
+
+                        # Add the data to the aggregated dataframe list
+                        aggregated_trans_df_list.append(
+                            [state, year, quarter, transaction_name, payment_type, payment_count, payment_amount])
+                            
+       # Repeat the same for each of the data folders 
+       
+df_aggregated_transaction=pd.DataFrame(aggregated_trans_df_list,columns=["state","year","quarter","transaction_name","payment_type","payment_count","payment_amount"])
+df_aggregated_user=pd.DataFrame(aggregated_user_df_list,columns=["state","year","quarter","reg_users","user_brand","count_users","percentage_user"])
+df_map_transaction=pd.DataFrame(map_trans_df_list,columns=["state","year","quarter","district","metric_type","metric_count","metric_amount"])
+df_map_user=pd.DataFrame(map_user_df_list,columns=["state","year","quarter","district","registeredusers"])
+df_top_transaction=pd.DataFrame(top_trans_df_list,columns=["state","year","quarter","entity_name","t_ype","c_ount","a_mount"])
+df_top_user=pd.DataFrame(top_user_df_list,columns=["state","year","quarter","pincode_name","registered_users","district_name","district_registered_users"])
+Step 4:
+Database insertion:
+
+To insert the datadrame into SQL first I've created a new database and tables using "mysql-connector-python" library in Python to connect to a MySQL database and insert the transformed data using SQL commands.
+
+Creating the connection between python and mysql
+
+    mydb = sql.connect(host="localhost",
+               user="username",
+               password="password",
+               database= "database name"
+              )
+    mycursor = mydb.cursor
+
+        
+    
+Step 5:
+Dashboard creation:
+
+To create colourful and insightful dashboard I've used Plotly libraries in Python to create an interactive and visually appealing dashboard. Plotly's built-in Pie, Bar, Geo map functions are used to display the data on a charts and map and Streamlit is used to create a user-friendly interface with multiple dropdown options for users to select different facts and figures to display.
+
+Step 6:
+Data retrieval:
+
+Finally if needed Using the "mysql-connector-python" library to connect to the MySQL database and fetch the data into a Pandas dataframe.
