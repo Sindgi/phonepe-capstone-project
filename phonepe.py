@@ -517,7 +517,7 @@ if SELECT == "About":
 
 if SELECT == "Contact":
     name = "Anupama Sindgi"
-    mail = (f'{"Mail :"}  {"anupamasindgi@gmail.com"}')
+    mail = "anupamasindgi@gmail.com
     description = "An Aspiring DATA-SCIENTIST..!"
     social_media = {
         "TWITTER": "https://www.linkedin.com/in/anupama-sindgi-234b71114/",
